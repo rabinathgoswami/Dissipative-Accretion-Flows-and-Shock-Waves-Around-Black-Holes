@@ -10,13 +10,13 @@ from functions import master_critical_point_solver
 # DATA GENERATION FOR lambda_in = 1.2
 # ==========================================
 
-lambda_in = 1.2
+lambda_in = 1.8
 
 # 1000 equally spaced points, including 1 and 500
 x_space = np.linspace(2.0, 1000.0, 5000)
 
 # Output directory
-output_dir = Path("data") / "lambda1o2"
+output_dir = Path("data") / "lambda1o8"
 output_dir.mkdir(parents=True, exist_ok=True)
 
 
@@ -37,6 +37,8 @@ for x_in in x_space:
             M_xc,
             v_xc,
             a_xc,
+            N,
+            D,
             dvdx_roots,
             eps,
             discriminant
@@ -45,7 +47,7 @@ for x_in in x_space:
         root1, root2 = dvdx_roots
 
         # Each row contains:
-        # x_in, lambda_in, M_xc, v_xc, a_xc,
+        # x_in, lambda_in, M_xc, v_xc, a_xc, N, D,
         # dvdx_root_1, dvdx_root_2, eps, discriminant
 
         row = [
@@ -54,6 +56,8 @@ for x_in in x_space:
             M_xc,
             v_xc,
             a_xc,
+            N,
+            D,
             root1,
             root2,
             eps,
@@ -102,7 +106,7 @@ for x_in in x_space:
 # ==========================================
 
 header = (
-    "x_in lambda_in M_xc v_xc a_xc "
+    "x_in lambda_in M_xc v_xc a_xc N D "
     "dvdx_root_1 dvdx_root_2 eps discriminant"
 )
 
@@ -114,7 +118,7 @@ def save_data(filename, data):
     # with its column header.
     np.savetxt(
         filepath,
-        np.asarray(data, dtype=float).reshape(-1, 9),
+        np.asarray(data, dtype=float).reshape(-1, 11),
         header=header,
         fmt="%.12e"
     )
@@ -122,9 +126,9 @@ def save_data(filename, data):
     print(f"{filename}: {len(data)} rows saved")
 
 
-save_data("nodal1o2.dat", nodal_data)
-save_data("saddle1o2.dat", saddle_data)
-save_data("spiral1o2.dat", spiral_data)
+save_data("nodal1o8.dat", nodal_data)
+save_data("saddle1o8.dat", saddle_data)
+save_data("spiral1o8.dat", spiral_data)
 
 
 # ==========================================

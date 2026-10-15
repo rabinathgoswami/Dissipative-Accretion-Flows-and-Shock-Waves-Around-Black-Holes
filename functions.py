@@ -114,13 +114,13 @@ def a_xc_equation(a_x,p,x_in,lambda_in):
     D_part2 = ((gamma + 1) * M**2) / (gamma - 1) - (2 * alpha_pi**2 * g * I_n * (g + gamma * M**2)) / gamma
     D = -(D_part1 * D_part2)
     F = A * (a_x**3) + B * (a_x**2) + C * a_x + D
-    return F,M_xc
+    return F
 
 #===========================
 # N AND D FINDER:
 #===========================
 
-def ND_finder(p,x_in,lambda_in):
+def ND_finder(p,x_in,a,v,lambda_in):
   
     gamma = p.gamma
     alpha_pi = p.alpha_pi
@@ -128,32 +128,7 @@ def ND_finder(p,x_in,lambda_in):
     g = p.g
     S = p.S
 
-    M_xc, m1, m2, m3 = m_xc(p)
-
-
-    # 2. Calculate sound speed at the critical point
-    f_target = lambda a_x: a_xc_equation(
-        a_x, p, x_in, lambda_in
-    )[0]
-
-    search_grid = np.linspace(0.001, 10, 1000)
-    found_roots = all_roots(f_target, search_grid)
-
-    # Keep only positive roots, ALTHOUGH THE SEARCH GRID ALREADY ENSURES POSITIVE ROOTS, THIS IS A SAFETY CHECK
-    positive_roots = [root for root in found_roots if root > 0]
-
-    if not positive_roots:
-        raise ValueError(
-            f"No positive sound-speed root detected for "
-            f"x_in={x_in:.4f}, lambda_in={lambda_in:.3f}"
-        )
-
-    a = positive_roots[0]
-
-
-    # 3. Calculate Speed of Accreting Gas at Critical Point (v_xc)
-    v = M_xc * a
-
+ 
     # Helper sub-expression common to both equations
     ga2_gv2 = g * a**2 + gamma * v**2
 
@@ -300,13 +275,13 @@ def master_critical_point_solver(p, x_in, lambda_in):
     """
 
     # 1. Calculate Critical Mach Number (M_xc)
-    M_xc, m1, m2, m3 = m_xc(p)
+    M_xc = m_xc(p)[0]
 
 
     # 2. Calculate sound speed at the critical point
     f_target = lambda a_x: a_xc_equation(
         a_x, p, x_in, lambda_in
-    )[0]
+    )
 
     search_grid = np.linspace(0.001, 10, 1000)
     found_roots = all_roots(f_target, search_grid)
@@ -337,9 +312,12 @@ def master_critical_point_solver(p, x_in, lambda_in):
     # 5. Calculate specific energy
     eps = energy(p, a_xc_val, v_xc, x_in, lambda_in)
 
+    # 6. N D values for the critical point
+    N, D = ND_finder(p, x_in, a_xc_val, v_xc, lambda_in)
+
     #dvdx equation discriminant
     discriminant = (m2**2) - (4 * m1 * m3)
 
-    return M_xc, v_xc, a_xc_val, dvdx_roots, eps, discriminant
+    return M_xc, v_xc, a_xc_val, N, D, dvdx_roots, eps, discriminant
 
 

@@ -75,14 +75,14 @@ for lam, folder_name in lambda_folders.items():
             print(f"No usable numerical data in: {filepath}")
             continue
 
-        if data.size == 0 or data.shape[1] < 8:
+        if data.size == 0 or data.shape[1] < 11:
             print(f"Empty or invalid data file: {filepath}")
             continue
 
         # Column 0: x_in
         # Column 7: eps
         x_in = data[:, 0]
-        eps = data[:, 7]
+        eps = data[:, 9]
 
         # Remove invalid values before plotting
         valid = (
