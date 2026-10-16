@@ -201,8 +201,17 @@ def dvdx_equation(dvdx,p,a,v,x_in,lambda_in):
     N_x = (
         - (S * a**5 * (5.0 * x_in - 3.0)) / (2.0 * x_in**2.5 * (x_in - 1.0)**2)
         - (alpha_pi**2 * I_n * (g * a**2 + gamma * v**2)**2) / (gamma**2 * x_in**2)
-        + (alpha_pi**2 * g * I_n * a**2 * (g * a**2 + gamma * v**2) / gamma**2) * ((-5.0 * x_in**2 + 6.0 * x_in - 3.0) / (x_in**2 * (x_in - 1.0)**2))
-        - ((-3.0 * lambda_in**2 / x_in**4) + (1.0 / (x_in - 1.0)**3)) * (((gamma + 1.0) * v**2 / (gamma - 1.0)) - (2.0 * alpha_pi**2 * g))
+        + (alpha_pi**2 * g * I_n * a**2 * (g * a**2 + gamma * v**2) / gamma**2) * (
+            (-5.0 * x_in**2 + 6.0 * x_in - 3.0) / (x_in**2 * (x_in - 1.0)**2)
+        )
+        - ((-3.0 * lambda_in**2 / x_in**4) + (1.0 / (x_in - 1.0)**3)) * (
+            ((gamma + 1.0) * v**2 / (gamma - 1.0))
+            - (2.0 * alpha_pi**2 * g * I_n * (g * a**2 + gamma * v**2) / gamma)
+        )
+        - ((v**2 * a**2) / (gamma - 1.0)) * (
+            (-5.0 * x_in**2 + 6.0 * x_in - 3.0) / (x_in**2 * (x_in - 1.0)**2)
+        )
+        + (4.0 * lambda_in * alpha_pi * I_n * v * (g * a**2 + gamma * v**2)) / (gamma * x_in**3)
     )
 
     # PARTIAL DERIVATIVES OF DENOMINATOR D(x_in, v, a, lambda_in)
@@ -247,7 +256,7 @@ def dvdx_equation(dvdx,p,a,v,x_in,lambda_in):
 
     m1 = D_v + D_a*A1
     m2 = D_a*A2 - N_v - N_a*A1 - N_lambda*(A1*B2 + B1)
-    m3 = N_a*A2 - N_lambda*(A2*B2 + B3) - N_x
+    m3 = - N_a*A2 - N_lambda*(A2*B2 + B3) - N_x
 
     F = m1*(dvdx**2) + m2*(dvdx) + m3
 

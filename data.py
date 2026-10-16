@@ -10,13 +10,13 @@ from functions import master_critical_point_solver
 # DATA GENERATION FOR lambda_in = 1.2
 # ==========================================
 
-lambda_in = 1.8
+lambda_in = 1.2
 
 # 1000 equally spaced points, including 1 and 500
 x_space = np.linspace(2.0, 1000.0, 5000)
 
 # Output directory
-output_dir = Path("data") / "lambda1o8"
+output_dir = Path("data") / "lambda1o2"
 output_dir.mkdir(parents=True, exist_ok=True)
 
 
@@ -126,9 +126,9 @@ def save_data(filename, data):
     print(f"{filename}: {len(data)} rows saved")
 
 
-save_data("nodal1o8.dat", nodal_data)
-save_data("saddle1o8.dat", saddle_data)
-save_data("spiral1o8.dat", spiral_data)
+save_data("nodal1o2.dat", nodal_data)
+save_data("saddle1o2.dat", saddle_data)
+save_data("spiral1o2.dat", spiral_data)
 
 
 # ==========================================
