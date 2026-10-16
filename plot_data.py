@@ -99,8 +99,8 @@ for lam, folder_name in lambda_folders.items():
             eps_plot,
             color=colour,
             marker=lambda_markers[lam],
-            s=13,
-            alpha=0.8,
+            s=2,
+            alpha=0.4,
             linewidths=0,
             rasterized=True,
         )
