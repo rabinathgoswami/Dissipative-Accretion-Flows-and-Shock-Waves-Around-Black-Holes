@@ -246,13 +246,13 @@ def dvdx_equation(dvdx,p,a,v,x_in,lambda_in):
     # Variables: gamma, alpha_pi, I_n, g, S, x_in, lambda_in, v, a
 
     # 1. Coefficient of dv_dx (B1)
-    B1 = -(alpha_pi * x_in * (g * a**2 - gamma * v**2)) / (gamma * v**2)
+    B1 = (alpha_pi * x_in * (g * a**2 - gamma * v**2)) / (2 * gamma * v**2)
 
     # 2. Coefficient of da_dx (B2)
-    B2 = (2.0 * alpha_pi * a * x_in * g) / (gamma * v)
+    B2 = - (alpha_pi * a * x_in * g) / (gamma * v)
 
     # 3. Remaining RHS terms independent of derivatives (B3)
-    B3 = (alpha_pi * (g * a**2 + gamma * v**2)) / (gamma * v)
+    B3 = - (alpha_pi * (g * a**2 + gamma * v**2)) / (2 * gamma * v)
 
     m1 = D_v + D_a*A1
     m2 = D_a*A2 - N_v - N_a*A1 - N_lambda*(A1*B2 + B1)
