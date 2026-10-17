@@ -99,7 +99,7 @@ def a_xc_equation(a_x,p,x_in,lambda_in):
     alpha_pi = p.alpha_pi
     I_n = p.I_n
     g = p.g
-    S = p.S
+    S = S_finder(p)  # Calculate S using the S_finder function
 
     M_xc, m1, m2, m3 = m_xc(p)
     M = M_xc
@@ -126,7 +126,7 @@ def ND_finder(p,x_in,a,v,lambda_in):
     alpha_pi = p.alpha_pi
     I_n = p.I_n
     g = p.g
-    S = p.S
+    S = S_finder(p)  # Calculate S using the S_finder function
 
  
     # Helper sub-expression common to both equations
@@ -158,6 +158,33 @@ def ND_finder(p,x_in,a,v,lambda_in):
     )
     
     return N,D
+#===========================
+# S FINDER:
+#===========================
+
+def S_finder(p):
+
+    gamma = p.gamma
+    mu = p.mu
+    # m_p = p.m_p
+    # k_B = p.k_B
+    # T_p = p.T_p
+    _beta = p._beta
+    m_dot = p.m_dot
+    m_e = p.m_e
+    G = p.G
+    M_dot = p.M_dot
+    c = p.c
+    # B=p.B
+    e=p.e
+
+    # eta=(B**2*mu*m_p)/(8*math.pi*k_B*p.T_p)
+    eta = 0.1
+
+    S=(7.5424*1.14*10**17*eta*_beta*m_dot*mu**2*e**4)/(m_e**3*gamma**(5/2)*2*G*M_dot*c**3)
+
+    return S
+
 
 #===========================
 # DV/DX QUADRATIC FUNCTION:
@@ -168,7 +195,7 @@ def dvdx_equation(dvdx,p,a,v,x_in,lambda_in):
     alpha_pi = p.alpha_pi
     I_n = p.I_n
     g = p.g
-    S = p.S
+    S = S_finder(p)
 
     # PARTIAL DERIVATIVES OF NUMERATOR N(x_in, v, a, lambda_in)
 

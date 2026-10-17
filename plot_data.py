@@ -172,7 +172,8 @@ ax.set_ylabel(r"$\epsilon_{\mathrm{critical}}$", fontsize=13)
 
 ax.set_title(
     r"Critical Energy vs $\ln(x_{\mathrm{in}})$ "
-    r"for Different $\lambda_{\mathrm{in}}$",
+    r"for Different $\lambda_{\mathrm{in}}$"
+    r"with $\alpha_{\pi} = 0.001$ and $\beta = 0.01$",
     fontsize=14,
 )
 
