@@ -21,17 +21,19 @@ output_dir.mkdir(parents=True, exist_ok=True)
 # ==========================================
 
 lambda_folders = {
-    1.2: "lambda1o2",
-    1.4: "lambda1o4",
     1.6: "lambda1o6",
+    1.65: "lambda1o65",
+    1.7: "lambda1o7",
+    1.75: "lambda1o75",
     1.8: "lambda1o8",
 }
 
 lambda_markers = {
-    1.2: "o",
-    1.4: "s",
-    1.6: "^",
-    1.8: "D",
+    1.6: "o",
+    1.65: "s",
+    1.7: "^",
+    1.75: "D",
+    1.8: "v",
 }
 
 # Colours represent critical-point classification
@@ -80,7 +82,7 @@ for lam, folder_name in lambda_folders.items():
             continue
 
         # Column 0: x_in
-        # Column 7: eps
+        # Column 9: eps
         x_in = data[:, 0]
         eps = data[:, 9]
 
