@@ -114,7 +114,42 @@ def a_xc_equation(a_x,p,x_in,lambda_in):
     D_part2 = ((gamma + 1) * M**2) / (gamma - 1) - (2 * alpha_pi**2 * g * I_n * (g + gamma * M**2)) / gamma
     D = -(D_part1 * D_part2)
     F = A * (a_x**3) + B * (a_x**2) + C * a_x + D
-    return F
+    return F,A,B,C,D
+
+#===========================
+# CRITICAL LAMBDA EQUATION FOR GIVEN x_in AND eps:
+#===========================
+
+def a_x_from_eps(p, x_in, eps, lambda_in, M_xc):
+    gamma = p.gamma
+    alpha_pi = p.alpha_pi
+    I_n = p.I_n
+    g = p.g
+    S = S_finder(p)  # Calculate S using the S_finder function
+
+    A = (eps - lambda_in**2/(2*x_in**2) + 1/(2*(x_in-1))) / (M_xc**2/2 + 1/(gamma-1))
+    if A <= 0:
+        return np.nan
+    return np.sqrt(A)
+
+
+    '''
+    f_target = lambda lambda_in: a1*(a_x**3) + a2*(a_x**2) + a3*a_x + a4
+
+    search_grid = np.linspace(0.25, 1.8, 1000)
+    found_roots = all_roots(f_target, search_grid)
+
+    # Keep only positive roots, ALTHOUGH THE SEARCH GRID ALREADY ENSURES POSITIVE ROOTS, THIS IS A SAFETY CHECK
+    positive_roots = [root for root in found_roots if root > 0]
+
+    if not positive_roots:
+        raise ValueError(
+            f"No positive sound-speed root detected for "
+            f"x_in={x_in:.4f}, lambda_in={lambda_in:.3f}"
+        )
+    '''
+
+
 
 #===========================
 # N AND D FINDER:
@@ -301,7 +336,7 @@ def energy(p,a,v,x_in,lambda_in):
     return epsilon
 
 #===========================
-# MASTER FUNCTION TO FIND ALL CRITICAL POINT PARAMETERS:
+# MASTER FUNCTION TO FIND ALL CRITICAL POINT PARAMETERS for given x and lambda:
 #===========================
 
 def master_critical_point_solver(p, x_in, lambda_in):
@@ -317,9 +352,9 @@ def master_critical_point_solver(p, x_in, lambda_in):
     # 2. Calculate sound speed at the critical point
     f_target = lambda a_x: a_xc_equation(
         a_x, p, x_in, lambda_in
-    )
+    )[0]  # Only interested in the first return value (F)
 
-    search_grid = np.linspace(0.001, 10, 1000)
+    search_grid = np.linspace(0.001, 1, 1000)
     found_roots = all_roots(f_target, search_grid)
 
     # Keep only positive roots, ALTHOUGH THE SEARCH GRID ALREADY ENSURES POSITIVE ROOTS, THIS IS A SAFETY CHECK
@@ -355,5 +390,87 @@ def master_critical_point_solver(p, x_in, lambda_in):
     discriminant = (m2**2) - (4 * m1 * m3)
 
     return M_xc, v_xc, a_xc_val, N, D, dvdx_roots, eps, discriminant
+
+
+#===========================
+# MASTER FUNCTION TO FIND ALL CRITICAL POINT PARAMETERS for given x and epsilon:
+#===========================
+
+def master_critical_point_solver_eps(p, x_in, eps):
+    """
+    Master function to calculate M_xc, a_xc, v_xc, dv/dx roots, and lambda_in for given x_in and eps.
+    Assumes m_xc, a_xc_equation, dvdx_equation, energy, and all_roots are defined.
+    """
+
+    # Calculate Critical Mach Number (M_xc)
+    M_xc = m_xc(p)[0]
+
+    # Calculate the sound speed at the critical point in term of lambda_in from given eps and x_in
+    a_xc_val = lambda lambda_in: a_x_from_eps(p, x_in, eps, lambda_in, M_xc)  
+
+    # Equation for sound speed at the critical point but a_xc_val is now a function of lambda_in
+    f_target = lambda lambda_in: a_xc_equation(
+        a_xc_val(lambda_in), p, x_in, lambda_in
+    )[0]  # Only interested in the first return value (F)
+
+    # finding the roots for lambda_in using a search grid and the all_roots function for bisection method
+    search_grid = np.linspace(0.9, 2.5, 1000)
+    found_roots = all_roots(f_target, search_grid)
+
+    # Keep only positive roots
+    positive_roots = [root for root in found_roots if root > 0]
+
+    if not positive_roots:
+        raise ValueError(
+            f"No positive angular momentum root detected for "
+            f"x_in={x_in:.4f}, eps={eps:.3f}"
+            f"{positive_roots}"
+        )
+
+    lambda_val = positive_roots[0] # resulting lambda_in value for the given x_in and eps
+
+    # validation 
+
+    # Calculate sound speed at the critical point using obtainde lambda_val
+    f_target2 = lambda a_x: a_xc_equation(
+        a_x, p, x_in, lambda_val
+    )[0]  # Only interested in the first return value (F)
+    
+    search_grid2 = np.linspace(0.001, 1, 1000)
+    found_roots2 = all_roots(f_target2, search_grid2)
+
+    # Keep only positive roots, ALTHOUGH THE SEARCH GRID ALREADY ENSURES POSITIVE ROOTS, THIS IS A SAFETY CHECK
+    positive_roots2 = [root for root in found_roots2 if root > 0]
+
+    if not positive_roots2:
+        raise ValueError(
+            f"No positive sound-speed root detected for "
+            f"x_in={x_in:.4f}, lambda_in={lambda_val:.3f}"
+        )
+
+    a_xc = positive_roots2[0]
+
+    v_xc = M_xc * a_xc
+
+    _, m1, m2, m3 = dvdx_equation(0, p, a_xc, v_xc, x_in, lambda_val)
+
+    dvdx_root_1, dvdx_root_2 = solve_dvdx_quadratic(m1, m2, m3)
+
+    dvdx_roots = (dvdx_root_1, dvdx_root_2)
+
+
+    # 4. Calculate specific energy
+    calculated_eps = energy(p, a_xc, v_xc, x_in, lambda_val)  # lambda_in is not used here
+
+    if not np.isclose(calculated_eps, eps):
+        raise ValueError(
+            f"Calculated energy {calculated_eps:.6f} does not match provided eps {eps:.6f} "
+            f"for x_in={x_in:.4f}"
+        )
+
+    return positive_roots,M_xc, a_xc, v_xc, dvdx_roots, lambda_val, eps, a_xc_val(lambda_val)
+
+
+
 
 
