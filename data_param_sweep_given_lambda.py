@@ -25,10 +25,10 @@ from functions import master_critical_point_solver
 # SETTINGS
 # ==========================================
 
-SWEEP_PARAM = "beta"              # "alpha_pi" or "beta"  <- the parameter that is toggled
+SWEEP_PARAM = "alpha_pi"              # "alpha_pi" or "beta"  <- the parameter that is toggled
 
 # Values of the swept parameter. Any list or numpy array, e.g. np.round(np.arange(0.0, 0.11, 0.02), 6)
-sweep_values = [0.0,0.2,0.4,0.6,0.8,1.0]
+sweep_values = [0.0, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.14, 0.16, 0.18, 0.2, 0.22, 0.24, 0.26, 0.28, 0.3]
 
 FIXED_ALPHA_PI = 0.00               # used when SWEEP_PARAM == "beta"
 FIXED_BETA = 0.0                    # used when SWEEP_PARAM == "alpha_pi"
